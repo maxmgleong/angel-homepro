@@ -6,7 +6,7 @@ export default function Header({ onDashboard, onAdmin, kosongCount, totalBeds })
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-secondary text-sm">Selamat Datang!</p>
-          <h1 className="text-white text-xl font-bold">Rumah Sewa Malaysia</h1>
+          <h1 className="text-white text-xl font-bold">Angel HomePro</h1>
         </div>
         <div className="flex items-center gap-2">
           <button

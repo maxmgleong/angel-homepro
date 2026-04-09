@@ -106,7 +106,7 @@ export default function App() {
           </div>
           <div className="px-4 mt-6 mb-4">
             <div className="bg-white rounded-3xl card-shadow p-5 text-center">
-              <div className="text-lg mb-1">📱 Pasang sebagai App</div>
+              <div className="text-lg mb-1">🏠 Angel HomePro</div>
               <p className="text-muted text-xs mb-3">Tambah ke skrin utama telefon anda</p>
               <a href="https://bilik-rental.maxmgleong.workers.dev/" className="inline-block bg-primary hover:bg-dark text-white font-semibold py-3 px-6 rounded-2xl transition-all active:scale-95 text-sm">
                 🌐 Buka & Pasang
