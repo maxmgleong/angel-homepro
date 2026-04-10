@@ -3,8 +3,9 @@ import { MapPin, Home, Bed } from 'lucide-react'
 export default function PropertyCard({ property, onClick }) {
   const totalBeds = property.rooms.reduce((a, r) => a + r.beds.length, 0)
   const kosongBeds = property.rooms.reduce((a, r) => a + r.beds.filter(b => !b.occupied).length, 0)
-  const minPrice = Math.min(...property.rooms.map(r => r.price))
-  const maxPrice = Math.max(...property.rooms.map(r => r.price))
+  const prices = property.rooms.map(r => r.price).filter(p => p > 0)
+  const minPrice = prices.length > 0 ? Math.min(...prices) : 0
+  const maxPrice = prices.length > 0 ? Math.max(...prices) : 0
 
   return (
     <div onClick={onClick} className="bg-white rounded-3xl overflow-hidden card-shadow cursor-pointer active:scale-[0.98] transition-transform">

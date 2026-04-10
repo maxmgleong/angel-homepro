@@ -16,13 +16,20 @@ function ImageUpload({ value, onChange, label, folder }) {
       reader.onloadend = async () => {
         const base64 = reader.result
         setPreview(base64)
-        // Upload to Firebase Storage
+        // Upload to Firebase Storage with timeout
         const path = `${folder}/${Date.now()}_${file.name}`
-        const url = await uploadImage(base64, path)
-        if (url) {
-          onChange(url)
-        } else {
-          // Fallback to base64 if upload fails
+        try {
+          const url = await Promise.race([
+            uploadImage(base64, path),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
+          ])
+          if (url) {
+            onChange(url)
+          } else {
+            onChange(base64)
+          }
+        } catch (error) {
+          console.log('Upload failed, using base64')
           onChange(base64)
         }
         setUploading(false)
@@ -78,10 +85,21 @@ function EditPropertyModal({ prop, onSave, onClose }) {
 
 function EditRoomModal({ room, onSave, onClose }) {
   const [form, setForm] = useState({ ...room })
+  const [customFacility, setCustomFacility] = useState('')
   const fileRef = useRef()
 
   function toggleFacility(f) {
     setForm(p => ({ ...p, facilities: p.facilities.includes(f) ? p.facilities.filter(x => x !== f) : [...p.facilities, f] }))
+  }
+
+  function addCustomFacility() {
+    if (customFacility.trim()) {
+      const newFacility = customFacility.trim().toLowerCase().replace(/\s+/g, '_')
+      if (!form.facilities.includes(newFacility)) {
+        setForm(p => ({ ...p, facilities: [...p.facilities, newFacility] }))
+      }
+      setCustomFacility('')
+    }
   }
 
   function handleImage(e) {
@@ -135,6 +153,22 @@ function EditRoomModal({ room, onSave, onClose }) {
                   {f === 'wifi' ? '📶' : f === 'ac' ? '❄️' : f === 'peti_sejuk' ? '🧊' : '🚗'} {f.charAt(0).toUpperCase() + f.slice(1)}
                 </button>
               ))}
+            </div>
+            {/* Custom facilities */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.facilities.filter(f => !FACILITIES_LIST.includes(f)).map(f => (
+                <span key={f} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-purple-100 text-purple-700 border border-purple-300 flex items-center gap-1">
+                  ✨ {f.replace(/_/g, ' ')}
+                  <button onClick={() => toggleFacility(f)} className="ml-1 text-purple-500 hover:text-purple-700">×</button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <input type="text" value={customFacility} onChange={e => setCustomFacility(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCustomFacility())}
+                placeholder="Tambah fasiliti lain..."
+                className="flex-1 border-2 border-dashed border-accent rounded-xl px-3 py-2 text-xs focus:border-primary focus:outline-none" />
+              <button onClick={addCustomFacility} className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-xl text-xs font-bold">+</button>
             </div>
           </div>
           <div><label className="block text-xs font-semibold text-primary mb-2">Katil dalam Bilik</label>
