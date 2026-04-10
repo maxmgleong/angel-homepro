@@ -9,7 +9,6 @@ import BookingForm from './components/BookingForm'
 import SuccessPage from './components/SuccessPage'
 import Dashboard from './components/Dashboard'
 import AdminPanel from './components/AdminPanel'
-import TenantList from './components/TenantList'
 
 const STORAGE_KEY = 'rental_properties_v2'
 const TENANTS_KEY = 'rental_tenants_v2'
@@ -73,7 +72,7 @@ export default function App() {
       roomId: selectedRoom.id,
       propId: selectedProp.id,
       appliedAt: new Date().toISOString(),
-      status: 'pending', // pending, confirmed
+      status: 'pending',
       rentAmount: selectedRoom.price,
       confirmedAt: null,
       nextPaymentDate: null
@@ -84,7 +83,6 @@ export default function App() {
   }
 
   function handleConfirm(tenantData) {
-    // Find the tenant and update with confirmation info
     const tarikhMasuk = tenantData.tarikhMasuk
     const masukDate = new Date(tarikhMasuk)
     const nextPayment = new Date(masukDate)
@@ -104,7 +102,6 @@ export default function App() {
     })
     saveTenants(updatedTenants)
 
-    // Also update room status
     const updatedProps = properties.map(p => {
       if (p.id !== tenantData.propId) return p
       return { ...p, rooms: p.rooms.map(r => r.id === tenantData.roomId ? { ...r, status: 'ditempah' } : r) }
@@ -153,10 +150,7 @@ export default function App() {
         <Dashboard tenants={tenants} properties={properties} onBack={() => setView('rooms')} onConfirm={handleConfirm} />
       )}
       {view === 'admin' && (
-        <AdminPanel properties={properties} onSave={saveProperties} onBack={() => setView('rooms')} onTenantList={() => setView('tenantList')} />
-      )}
-      {view === 'tenantList' && (
-        <TenantList tenants={tenants} properties={properties} onBack={() => setView('admin')} onUpdateTenant={handleUpdateTenant} />
+        <AdminPanel properties={properties} onSave={saveProperties} onBack={() => setView('rooms')} tenants={tenants} onUpdateTenant={handleUpdateTenant} />
       )}
     </div>
   )
