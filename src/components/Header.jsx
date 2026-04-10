@@ -1,4 +1,4 @@
-import { Home, User, Settings } from 'lucide-react'
+import { Home, User, Users } from 'lucide-react'
 
 export default function Header({ onDashboard, onAdmin, kosongBeds, totalBeds }) {
   return (
@@ -9,11 +9,11 @@ export default function Header({ onDashboard, onAdmin, kosongBeds, totalBeds }) 
           <h1 className="text-white text-xl font-bold">Rumah Sewa Malaysia</h1>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onAdmin} className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-xl" title="Edit Properties">
-            <Settings size={18} />
-          </button>
           <button onClick={onDashboard} className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-sm font-medium flex items-center gap-1">
-            <Home size={16} /> Admin
+            <Home size={16} /> Dashboard
+          </button>
+          <button onClick={onAdmin} className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-sm font-medium flex items-center gap-1">
+            <Users size={16} /> Admin
           </button>
           <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
             <User size={20} className="text-dark" />
