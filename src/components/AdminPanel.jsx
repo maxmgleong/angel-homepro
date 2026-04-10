@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ArrowLeft, Edit2, Trash2, Plus, Save, X, Upload, Calendar, DollarSign, Users } from 'lucide-react'
+import { ArrowLeft, Edit2, Trash2, Plus, Save, X, Upload, Calendar, DollarSign, Users, CheckCircle, Phone, Image } from 'lucide-react'
 import { FACILITIES_LIST } from '../data/properties'
 
 function ImageUpload({ value, onChange, label }) {
@@ -165,11 +165,6 @@ function EditTenantModal({ tenant, onSave, onClose }) {
     onClose()
   }
 
-  function formatDisplayDate(iso) {
-    if (!iso) return '-'
-    return new Date(iso).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' })
-  }
-
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5" onClick={e => e.stopPropagation()}>
@@ -196,7 +191,6 @@ function EditTenantModal({ tenant, onSave, onClose }) {
             <label className="block text-xs font-semibold text-primary mb-1">📅 Tarikh Bayar Sewa Berikutnya</label>
             <input type="date" name="nextPaymentDate" value={form.nextPaymentDate?.split('T')[0] || ''} onChange={handleChange}
               className="w-full border-2 border-accent rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none" />
-            <p className="text-xs text-muted mt-1">Auto: +1 bulan dari tarikh masuk</p>
           </div>
           <div>
             <label className="block text-xs font-semibold text-primary mb-1">📝 Status</label>
@@ -214,11 +208,44 @@ function EditTenantModal({ tenant, onSave, onClose }) {
   )
 }
 
-export default function AdminPanel({ properties, onSave, onBack, tenants, onUpdateTenant }) {
+function ViewTenantModal({ tenant, onClose }) {
+  function formatDate(iso) {
+    if (!iso) return '-'
+    return new Date(iso).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' })
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-3xl max-w-sm w-full p-5" onClick={e => e.stopPropagation()}>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-bold text-primary">Maklumat {tenant.nama}</h3>
+          <button onClick={onClose} className="text-muted"><X size={20} /></button>
+        </div>
+        <div className="space-y-3 text-sm">
+          <div><span className="text-muted">Bed:</span> <span className="font-bold">{tenant.selectedBedName}</span></div>
+          <div><span className="text-muted">No. IC:</span> <span className="font-mono font-bold">{tenant.ic}</span></div>
+          <div><span className="text-muted">Telefon:</span> <span className="font-bold">{tenant.telefon}</span></div>
+          <div><span className="text-muted">Tarikh Masuk:</span> {tenant.tarikhMasuk}</div>
+          <div><span className="text-muted">Tarikh Mohon:</span> {formatDate(tenant.appliedAt)}</div>
+          {tenant.icImage && (
+            <div>
+              <span className="text-muted">Gambar IC:</span>
+              <img src={tenant.icImage} alt="IC" className="mt-2 w-full rounded-xl border-2 border-accent" />
+            </div>
+          )}
+        </div>
+        <button onClick={onClose} className="btn-secondary w-full mt-4 text-center">Tutup</button>
+      </div>
+    </div>
+  )
+}
+
+export default function AdminPanel({ properties, onSave, onBack, tenants, onUpdateTenant, onConfirm }) {
   const [editProp, setEditProp] = useState(null)
   const [editRoom, setEditRoom] = useState(null)
   const [editTenant, setEditTenant] = useState(null)
-  const [tab, setTab] = useState('properties') // 'properties' or 'tenants'
+  const [viewTenant, setViewTenant] = useState(null)
+  const [tab, setTab] = useState('properties') // 'properties', 'applications', 'tenants'
 
   function saveProperty(updated) {
     onSave(properties.map(p => p.id === updated.id ? updated : p))
@@ -232,7 +259,6 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
   }
 
   function addRoom(propId) {
-    const prop = properties.find(p => p.id === propId)
     const newRoom = {
       id: Date.now(), name: 'Bilik Baru', price: 500, status: 'kosong',
       description: 'Description bilik baru', image: '', facilities: ['wifi'],
@@ -256,6 +282,11 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
     if (!prop) return { propName: 'Property', roomName: 'Bilik' }
     const room = prop.rooms.find(r => r.id === roomId)
     return { propName: prop.name, roomName: room?.name || 'Bilik', roomPrice: room?.price || 0 }
+  }
+
+  function handleWhatsApp(telefon) {
+    const clean = telefon.replace(/[-\s]/g, '')
+    window.open(`https://wa.me/6${clean}`, '_blank')
   }
 
   function formatDate(iso) {
@@ -285,12 +316,16 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
         {/* Tab Switcher */}
         <div className="flex gap-2">
           <button onClick={() => setTab('properties')}
-            className={`flex-1 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors ${tab === 'properties' ? 'bg-white text-primary' : 'bg-white/20 text-white'}`}>
+            className={`flex-1 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-colors ${tab === 'properties' ? 'bg-white text-primary' : 'bg-white/20 text-white'}`}>
             🏠 Properties
           </button>
+          <button onClick={() => setTab('applications')}
+            className={`flex-1 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-colors ${tab === 'applications' ? 'bg-white text-primary' : 'bg-white/20 text-white'}`}>
+            📋 Permohonan {pendingTenants.length > 0 && `(${pendingTenants.length})`}
+          </button>
           <button onClick={() => setTab('tenants')}
-            className={`flex-1 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors ${tab === 'tenants' ? 'bg-white text-primary' : 'bg-white/20 text-white'}`}>
-            👥 Penyewa ({confirmedTenants.length})
+            className={`flex-1 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-colors ${tab === 'tenants' ? 'bg-white text-primary' : 'bg-white/20 text-white'}`}>
+            👥 Penyewa
           </button>
         </div>
       </div>
@@ -347,7 +382,58 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
           </>
         )}
 
-        {/* TENANTS TAB */}
+        {/* APPLICATIONS TAB (Dashboard functionality) */}
+        {tab === 'applications' && (
+          <>
+            <div className="grid grid-cols-3 gap-2 mt-4">
+              <div className="bg-white rounded-2xl p-3 text-center shadow"><p className="text-muted text-xs">Permohonan</p><p className="text-primary text-2xl font-bold">{pendingTenants.length}</p></div>
+              <div className="bg-white rounded-2xl p-3 text-center shadow"><p className="text-muted text-xs">Disahkan</p><p className="text-green-600 text-2xl font-bold">{confirmedTenants.length}</p></div>
+              <div className="bg-white rounded-2xl p-3 text-center shadow"><p className="text-muted text-xs">Pendapatan</p><p className="text-green-600 text-2xl font-bold">RM{totalMonthlyRent}</p></div>
+            </div>
+
+            <h3 className="text-sm font-bold text-muted uppercase tracking-wide mt-4 mb-2">⏳ Menunggu Pengesahan ({pendingTenants.length})</h3>
+            {pendingTenants.length === 0 ? (
+              <div className="bg-white rounded-3xl card-shadow p-8 text-center">
+                <p className="text-muted">Tiada permohonan baru.</p>
+              </div>
+            ) : (
+              <div className="space-y-3 pb-6">
+                {pendingTenants.map((tenant, idx) => {
+                  const { propName, roomName } = getRoomInfo(tenant.roomId, tenant.propId)
+                  return (
+                    <div key={idx} className="bg-white rounded-2xl card-shadow p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-primary">{tenant.nama}</h3>
+                          <p className="text-xs text-muted">{propName} - {roomName}</p>
+                          <p className="text-xs text-muted mt-1">🛏 {tenant.selectedBedName}</p>
+                          <p className="text-xs text-muted">📅 {tenant.tarikhMasuk || 'Tiada tarikh'}</p>
+                          <p className="text-xs text-muted">⏱ {formatDate(tenant.appliedAt)}</p>
+                          <div className="mt-2 flex gap-2">
+                            <button onClick={() => setViewTenant(tenant)} className="flex items-center gap-1 text-xs text-primary border border-primary px-2 py-1 rounded-lg hover:bg-accent">
+                              <Image size={12} /> Lihat IC
+                            </button>
+                            <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg text-xs font-bold">Menunggu</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2 ml-3">
+                          <button onClick={() => handleWhatsApp(tenant.telefon)} className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
+                            <Phone size={13} /> WhatsApp
+                          </button>
+                          <button onClick={() => onConfirm(tenant)} className="bg-primary hover:bg-dark text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
+                            <CheckCircle size={13} /> Sah
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* TENANTS TAB (Confirmed tenants) */}
         {tab === 'tenants' && (
           <>
             <div className="grid grid-cols-2 gap-2 mt-4">
@@ -361,83 +447,56 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
               </div>
             </div>
 
-            {confirmedTenants.length === 0 && pendingTenants.length === 0 ? (
+            {confirmedTenants.length === 0 ? (
               <div className="bg-white rounded-3xl card-shadow p-8 text-center mt-4">
-                <p className="text-muted">Belum ada penyewa.</p>
+                <p className="text-muted">Belum ada penyewa yang disahkan.</p>
               </div>
             ) : (
               <>
-                {confirmedTenants.length > 0 && (
-                  <>
-                    <h3 className="text-sm font-bold text-muted uppercase tracking-wide mt-4 mb-2">💼 Penyewa Aktif</h3>
-                    <div className="space-y-3">
-                      {confirmedTenants.map((tenant, idx) => {
-                        const { propName, roomName } = getRoomInfo(tenant.roomId, tenant.propId)
-                        const nextPayment = tenant.nextPaymentDate ? new Date(tenant.nextPaymentDate) : null
-                        const daysUntilPayment = nextPayment ? Math.ceil((nextPayment - new Date()) / (1000 * 60 * 60 * 24)) : null
-                        return (
-                          <div key={idx} className="bg-white rounded-2xl card-shadow p-4">
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="flex-1">
-                                <h3 className="font-bold text-primary">{tenant.nama}</h3>
-                                <p className="text-xs text-muted">{propName} - {roomName}</p>
-                              </div>
-                              <button onClick={() => setEditTenant(tenant)} className="p-2 text-primary hover:bg-accent rounded-lg">
-                                <Edit2 size={16} />
-                              </button>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <div className="bg-green-50 rounded-xl p-2 text-center">
-                                <DollarSign size={14} className="text-green-600 mx-auto mb-1" />
-                                <p className="text-xs text-muted">Sewa</p>
-                                <p className="font-bold text-green-700">RM {tenant.rentAmount || 0}</p>
-                              </div>
-                              <div className="bg-blue-50 rounded-xl p-2 text-center">
-                                <Calendar size={14} className="text-blue-600 mx-auto mb-1" />
-                                <p className="text-xs text-muted">Masuk</p>
-                                <p className="font-bold text-blue-700">{formatShortDate(tenant.tarikhMasuk)}</p>
-                              </div>
-                              <div className={`rounded-xl p-2 text-center ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'bg-red-50' : 'bg-orange-50'}`}>
-                                <Calendar size={14} className={`mx-auto mb-1 ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'text-red-600' : 'text-orange-600'}`} />
-                                <p className="text-xs text-muted">Bayar</p>
-                                <p className={`font-bold ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'text-red-700' : 'text-orange-700'}`}>
-                                  {daysUntilPayment !== null ? `${daysUntilPayment}h` : '-'}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="mt-2 text-xs text-muted">
-                              <p>📅 Tarikh masuk: {formatDate(tenant.tarikhMasuk)}</p>
-                              <p>💵 Bayar berikutnya: {formatDate(tenant.nextPaymentDate)}</p>
-                            </div>
+                <h3 className="text-sm font-bold text-muted uppercase tracking-wide mt-4 mb-2">💼 Penyewa Aktif</h3>
+                <div className="space-y-3 pb-6">
+                  {confirmedTenants.map((tenant, idx) => {
+                    const { propName, roomName } = getRoomInfo(tenant.roomId, tenant.propId)
+                    const nextPayment = tenant.nextPaymentDate ? new Date(tenant.nextPaymentDate) : null
+                    const daysUntilPayment = nextPayment ? Math.ceil((nextPayment - new Date()) / (1000 * 60 * 60 * 24)) : null
+                    return (
+                      <div key={idx} className="bg-white rounded-2xl card-shadow p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h3 className="font-bold text-primary">{tenant.nama}</h3>
+                            <p className="text-xs text-muted">{propName} - {roomName}</p>
                           </div>
-                        )
-                      })}
-                    </div>
-                  </>
-                )}
-
-                {pendingTenants.length > 0 && (
-                  <>
-                    <h3 className="text-sm font-bold text-muted uppercase tracking-wide mt-6 mb-2">⏳ Menunggu Pengesahan</h3>
-                    <div className="space-y-3 pb-6">
-                      {pendingTenants.map((tenant, idx) => {
-                        const { propName, roomName } = getRoomInfo(tenant.roomId, tenant.propId)
-                        return (
-                          <div key={idx} className="bg-white rounded-2xl card-shadow p-4 opacity-75">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h3 className="font-bold text-primary">{tenant.nama}</h3>
-                                <p className="text-xs text-muted">{propName} - {roomName}</p>
-                                <p className="text-xs text-muted mt-1">📅 {formatDate(tenant.appliedAt)}</p>
-                              </div>
-                              <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg text-xs font-bold">Menunggu</span>
-                            </div>
+                          <button onClick={() => setEditTenant(tenant)} className="p-2 text-primary hover:bg-accent rounded-lg">
+                            <Edit2 size={16} />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="bg-green-50 rounded-xl p-2 text-center">
+                            <DollarSign size={14} className="text-green-600 mx-auto mb-1" />
+                            <p className="text-xs text-muted">Sewa</p>
+                            <p className="font-bold text-green-700">RM {tenant.rentAmount || 0}</p>
                           </div>
-                        )
-                      })}
-                    </div>
-                  </>
-                )}
+                          <div className="bg-blue-50 rounded-xl p-2 text-center">
+                            <Calendar size={14} className="text-blue-600 mx-auto mb-1" />
+                            <p className="text-xs text-muted">Masuk</p>
+                            <p className="font-bold text-blue-700">{formatShortDate(tenant.tarikhMasuk)}</p>
+                          </div>
+                          <div className={`rounded-xl p-2 text-center ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'bg-red-50' : 'bg-orange-50'}`}>
+                            <Calendar size={14} className={`mx-auto mb-1 ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'text-red-600' : 'text-orange-600'}`} />
+                            <p className="text-xs text-muted">Bayar</p>
+                            <p className={`font-bold ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'text-red-700' : 'text-orange-700'}`}>
+                              {daysUntilPayment !== null ? `${daysUntilPayment}h` : '-'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-xs text-muted">
+                          <p>📅 Tarikh masuk: {formatDate(tenant.tarikhMasuk)}</p>
+                          <p>💵 Bayar berikutnya: {formatDate(tenant.nextPaymentDate)}</p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               </>
             )}
           </>
@@ -446,6 +505,7 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
       {editProp && <EditPropertyModal prop={editProp} onSave={saveProperty} onClose={() => setEditProp(null)} />}
       {editRoom && <EditRoomModal room={editRoom} onSave={saveRoom} onClose={() => setEditRoom(null)} />}
       {editTenant && <EditTenantModal tenant={editTenant} onSave={onUpdateTenant} onClose={() => setEditTenant(null)} />}
+      {viewTenant && <ViewTenantModal tenant={viewTenant} onClose={() => setViewTenant(null)} />}
     </div>
   )
 }

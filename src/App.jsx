@@ -7,7 +7,6 @@ import PropertyDetail from './components/PropertyDetail'
 import RoomDetail from './components/RoomDetail'
 import BookingForm from './components/BookingForm'
 import SuccessPage from './components/SuccessPage'
-import Dashboard from './components/Dashboard'
 import AdminPanel from './components/AdminPanel'
 
 const STORAGE_KEY = 'rental_properties_v2'
@@ -125,7 +124,7 @@ export default function App() {
     <div className="min-h-screen bg-accent pb-8">
       {view === 'rooms' && (
         <>
-          <Header onDashboard={() => setView('dashboard')} onAdmin={() => setView('admin')} kosongBeds={kosongBeds} totalBeds={totalBeds} />
+          <Header onAdmin={() => setView('admin')} kosongBeds={kosongBeds} totalBeds={totalBeds} />
           <FilterTabs filter={filter} onFilterChange={setFilter} />
           <div className="px-4 space-y-4">
             {getFilteredProperties().map(prop => (
@@ -146,11 +145,15 @@ export default function App() {
       {view === 'success' && (
         <SuccessPage room={selectedRoom} property={selectedProp} onHome={() => { setView('rooms'); setSelectedRoom(null); setSelectedProp(null) }} />
       )}
-      {view === 'dashboard' && (
-        <Dashboard tenants={tenants} properties={properties} onBack={() => setView('rooms')} onConfirm={handleConfirm} />
-      )}
       {view === 'admin' && (
-        <AdminPanel properties={properties} onSave={saveProperties} onBack={() => setView('rooms')} tenants={tenants} onUpdateTenant={handleUpdateTenant} />
+        <AdminPanel
+          properties={properties}
+          onSave={saveProperties}
+          onBack={() => setView('rooms')}
+          tenants={tenants}
+          onUpdateTenant={handleUpdateTenant}
+          onConfirm={handleConfirm}
+        />
       )}
     </div>
   )
