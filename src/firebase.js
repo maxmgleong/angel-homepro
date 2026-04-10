@@ -6,7 +6,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyAbyoEHnfkOUQJXOgD3NjMWGwPPBYUnIBk",
   authDomain: "rumah-sewa-app.firebaseapp.com",
   projectId: "rumah-sewa-app",
-  storageBucket: "rumah-sewa-app.firebasestorage.app",
+  storageBucket: "rumah-sewa-app.appspot.com",
   messagingSenderId: "562302381720",
   appId: "1:562302381720:web:ec577a0ac98e38326b2aed"
 };
