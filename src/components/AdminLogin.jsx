@@ -44,9 +44,7 @@ export default function AdminLogin({ onLogin }) {
           </button>
         </form>
         
-        <p className="text-xs text-center text-muted mt-4">
-          Default: 888888
-        </p>
+
       </div>
     </div>
   )
