@@ -264,7 +264,6 @@ function EditTenantModal({ tenant, onSave, onClose }) {
   )
 }
 
-
 function ChangePasswordModal({ onClose }) {
   const [oldPass, setOldPass] = useState('')
   const [newPass, setNewPass] = useState('')
@@ -276,32 +275,93 @@ function ChangePasswordModal({ onClose }) {
     setError('')
     const PASSWORD_KEY = 'admin_password'
     const currentPassword = localStorage.getItem(PASSWORD_KEY) || '888888'
-    if (oldPass !== currentPassword) { setError('Password lama salah!'); return }
-    if (newPass.length < 4) { setError('Password最少4个字!'); return }
-    if (newPass !== confirmPass) { setError('Password不一样!'); return }
+    
+    if (oldPass !== currentPassword) {
+      setError('Password lama salah!')
+      return
+    }
+    
+    if (newPass.length < 4) {
+      setError('Password baru??4??!')
+      return
+    }
+    
+    if (newPass !== confirmPass) {
+      setError('Password baru??????!')
+      return
+    }
+    
     localStorage.setItem(PASSWORD_KEY, newPass)
     setSuccess(true)
-    setTimeout(() => { localStorage.removeItem('rental_admin_logged_in'); onClose(); window.location.reload() }, 1500)
+    setTimeout(() => {
+      localStorage.removeItem('rental_admin_logged_in')
+      onClose()
+      window.location.reload()
+    }, 1500)
   }
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white rounded-3xl max-w-sm w-full p-5" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <h3 className="font-bold text-primary">🔐 修改密码</h3>
+          <h3 className="font-bold text-primary">?? ????</h3>
           <button onClick={onClose} className="text-muted"><X size={20} /></button>
         </div>
         {success ? (
-          <div className="text-center py-4"><div className="text-4xl mb-2">✅</div><p className="text-green-600 font-bold">密码修改成功!</p></div>
+          <div className="text-center py-4">
+            <div className="text-4xl mb-2">?</div>
+            <p className="text-green-600 font-bold">??????!</p>
+          </div>
         ) : (
           <div className="space-y-3">
-            <div><label className="block text-xs font-semibold text-primary mb-1">Password Lama</label><input type="password" value={oldPass} onChange={e => setOldPass(e.target.value)} className="w-full border-2 border-accent rounded-xl px-4 py-2.5 text-sm" placeholder="Enter password lama" /></div>
-            <div><label className="block text-xs font-semibold text-primary mb-1">Password Baru</label><input type="password" value={newPass} onChange={e => setNewPass(e.target.value)} className="w-full border-2 border-accent rounded-xl px-4 py-2.5 text-sm" placeholder="最少4个字" /></div>
-            <div><label className="block text-xs font-semibold text-primary mb-1">确认 Password Baru</label><input type="password" value={confirmPass} onChange={e => setConfirmPass(e.target.value)} className="w-full border-2 border-accent rounded-xl px-4 py-2.5 text-sm" placeholder=" ulang password baru" /></div>
+            <div>
+              <label className="block text-xs font-semibold text-primary mb-1">Password Lama</label>
+              <input type="password" value={oldPass} onChange={e => setOldPass(e.target.value)}
+                className="w-full border-2 border-accent rounded-xl px-4 py-2.5 text-sm" placeholder="Enter password lama" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-primary mb-1">Password Baru</label>
+              <input type="password" value={newPass} onChange={e => setNewPass(e.target.value)}
+                className="w-full border-2 border-accent rounded-xl px-4 py-2.5 text-sm" placeholder="??4??" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-primary mb-1">?? Password Baru</label>
+              <input type="password" value={confirmPass} onChange={e => setConfirmPass(e.target.value)}
+                className="w-full border-2 border-accent rounded-xl px-4 py-2.5 text-sm" placeholder=" ulang password baru" />
+            </div>
             {error && <p className="text-red-500 text-sm text-center">{error}</p>}
             <button onClick={handleSave} className="btn-primary w-full">Simpan Password Baru</button>
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+function ChangePasswordModal({ onClose }) {
+  const [oldPw, setOldPw] = useState()
+ const [newPw, setNewPw] = useState()
+  const [err, setErr] = useState()
+ function handleSave() {
+ if (oldPw !== localStorage.getItem( admin_password) && oldPw !== 888888) { setErr(Password lama salah!); return }
+ if (newPw.length < 4) { setErr(Password baru??4???!); return }
+ localStorage.setItem(admin_password, newPw)
+ setErr()
+    onClose()()
+  }
+  return (
+    <div className=fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 onClick={onClose}>
+      <div className=bg-white rounded-3xl max-w-sm w-full p-5 onClick={e => e.stopPropagation()}>
+        <h2 className=text-lg font-bold mb-4>?? Ubah Password</h2>
+        <div className=space-y-3>
+          <input type=password placeholder=Password lama value={oldPw} onChange={e => setOldPw(e.target.value)} className=w-full border-2 border-accent rounded-xl px-4 py-3 />
+          <input type=password placeholder=Password baru value={newPw} onChange={e => setNewPw(e.target.value)} className=w-full border-2 border-accent rounded-xl px-4 py-3 />
+          {err && <p className=text-red-500 text-sm>{err}</p>}
+        </div>
+        <div className=flex gap-2 mt-4>
+          <button onClick={onClose} className=flex-1 py-3 bg-gray-200 rounded-xl font-bold>Batal</button>
+          <button onClick={handleSave} className=flex-1 py-3 bg-primary text-white rounded-xl font-bold>Simpan</button>
+        </div>
       </div>
     </div>
   )
@@ -344,7 +404,7 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
   const [editRoom, setEditRoom] = useState(null)
   const [editTenant, setEditTenant] = useState(null)
   const [viewTenant, setViewTenant] = useState(null)
-  const [tab, setTab] = useState('properties')
+  const [tab, setTab] = useState('properties') // 'properties', 'applications', 'tenants'
   const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   function saveProperty(updated) {
@@ -488,125 +548,3 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
             <div className="grid grid-cols-3 gap-2 mt-4">
               <div className="bg-white rounded-2xl p-3 text-center shadow"><p className="text-muted text-xs">Permohonan</p><p className="text-primary text-2xl font-bold">{pendingTenants.length}</p></div>
               <div className="bg-white rounded-2xl p-3 text-center shadow"><p className="text-muted text-xs">Disahkan</p><p className="text-green-600 text-2xl font-bold">{confirmedTenants.length}</p></div>
-              <div className="bg-white rounded-2xl p-3 text-center shadow"><p className="text-muted text-xs">Pendapatan</p><p className="text-green-600 text-2xl font-bold">RM{totalMonthlyRent}</p></div>
-            </div>
-
-            <h3 className="text-sm font-bold text-muted uppercase tracking-wide mt-4 mb-2">ΓÅ│ Menunggu Pengesahan ({pendingTenants.length})</h3>
-            {pendingTenants.length === 0 ? (
-              <div className="bg-white rounded-3xl card-shadow p-8 text-center">
-                <p className="text-muted">Tiada permohonan baru.</p>
-              </div>
-            ) : (
-              <div className="space-y-3 pb-6">
-                {pendingTenants.map((tenant, idx) => {
-                  const { propName, roomName } = getRoomInfo(tenant.roomId, tenant.propId)
-                  return (
-                    <div key={idx} className="bg-white rounded-2xl card-shadow p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-primary">{tenant.nama}</h3>
-                          <p className="text-xs text-muted">{propName} - {roomName}</p>
-                          <p className="text-xs text-muted mt-1">≡ƒ¢Å {tenant.selectedBedName}</p>
-                          <p className="text-xs text-muted">≡ƒôà {tenant.tarikhMasuk || 'Tiada tarikh'}</p>
-                          <p className="text-xs text-muted">ΓÅ▒ {formatDate(tenant.appliedAt)}</p>
-                          <div className="mt-2 flex gap-2">
-                            <button onClick={() => setViewTenant(tenant)} className="flex items-center gap-1 text-xs text-primary border border-primary px-2 py-1 rounded-lg hover:bg-accent">
-                              <Image size={12} /> Lihat IC
-                            </button>
-                            <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg text-xs font-bold">Menunggu</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-2 ml-3">
-                          <button onClick={() => handleWhatsApp(tenant.telefon)} className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
-                            <Phone size={13} /> WhatsApp
-                          </button>
-                          <button onClick={() => onConfirm(tenant)} className="bg-primary hover:bg-dark text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
-                            <CheckCircle size={13} /> Sah
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* TENANTS TAB (Confirmed tenants) */}
-        {tab === 'tenants' && (
-          <>
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              <div className="bg-white rounded-2xl p-3 text-center shadow">
-                <p className="text-muted text-xs">Jumlah Penyewa</p>
-                <p className="text-primary text-2xl font-bold">{confirmedTenants.length}</p>
-              </div>
-              <div className="bg-white rounded-2xl p-3 text-center shadow">
-                <p className="text-muted text-xs">Pendapatan Bulanan</p>
-                <p className="text-green-600 text-2xl font-bold">RM {totalMonthlyRent}</p>
-              </div>
-            </div>
-
-            {confirmedTenants.length === 0 ? (
-              <div className="bg-white rounded-3xl card-shadow p-8 text-center mt-4">
-                <p className="text-muted">Belum ada penyewa yang disahkan.</p>
-              </div>
-            ) : (
-              <>
-                <h3 className="text-sm font-bold text-muted uppercase tracking-wide mt-4 mb-2">≡ƒÆ╝ Penyewa Aktif</h3>
-                <div className="space-y-3 pb-6">
-                  {confirmedTenants.map((tenant, idx) => {
-                    const { propName, roomName } = getRoomInfo(tenant.roomId, tenant.propId)
-                    const nextPayment = tenant.nextPaymentDate ? new Date(tenant.nextPaymentDate) : null
-                    const daysUntilPayment = nextPayment ? Math.ceil((nextPayment - new Date()) / (1000 * 60 * 60 * 24)) : null
-                    return (
-                      <div key={idx} className="bg-white rounded-2xl card-shadow p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <h3 className="font-bold text-primary">{tenant.nama}</h3>
-                            <p className="text-xs text-muted">{propName} - {roomName}</p>
-                          </div>
-                          <button onClick={() => setEditTenant(tenant)} className="p-2 text-primary hover:bg-accent rounded-lg">
-                            <Edit2 size={16} />
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                          <div className="bg-green-50 rounded-xl p-2 text-center">
-                            <DollarSign size={14} className="text-green-600 mx-auto mb-1" />
-                            <p className="text-xs text-muted">Sewa</p>
-                            <p className="font-bold text-green-700">RM {tenant.rentAmount || 0}</p>
-                          </div>
-                          <div className="bg-blue-50 rounded-xl p-2 text-center">
-                            <Calendar size={14} className="text-blue-600 mx-auto mb-1" />
-                            <p className="text-xs text-muted">Masuk</p>
-                            <p className="font-bold text-blue-700">{formatShortDate(tenant.tarikhMasuk)}</p>
-                          </div>
-                          <div className={`rounded-xl p-2 text-center ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'bg-red-50' : 'bg-orange-50'}`}>
-                            <Calendar size={14} className={`mx-auto mb-1 ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'text-red-600' : 'text-orange-600'}`} />
-                            <p className="text-xs text-muted">Bayar</p>
-                            <p className={`font-bold ${daysUntilPayment !== null && daysUntilPayment <= 7 ? 'text-red-700' : 'text-orange-700'}`}>
-                              {daysUntilPayment !== null ? `${daysUntilPayment}h` : '-'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="mt-2 text-xs text-muted">
-                          <p>≡ƒôà Tarikh masuk: {formatDate(tenant.tarikhMasuk)}</p>
-                          <p>≡ƒÆ╡ Bayar berikutnya: {formatDate(tenant.nextPaymentDate)}</p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </>
-            )}
-          </>
-        )}
-      </div>
-      {editProp && <EditPropertyModal prop={editProp} onSave={saveProperty} onClose={() => setEditProp(null)} />}
-      {editRoom && <EditRoomModal room={editRoom} onSave={saveRoom} onClose={() => setEditRoom(null)} />}
-      {editTenant && <EditTenantModal tenant={editTenant} onSave={onUpdateTenant} onClose={() => setEditTenant(null)} />}
-      {showPasswordModal && <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />}
-      {viewTenant && <ViewTenantModal tenant={viewTenant} onClose={() => setViewTenant(null)} />}
-    </div>
-  )
-}
