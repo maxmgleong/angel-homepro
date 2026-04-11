@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ArrowLeft, Edit2, Trash2, Plus, Save, X, Upload, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Edit2, Trash2, Plus, Save, X, Upload } from 'lucide-react'
 import { FACILITIES_LIST } from '../data/properties'
 
 function ImageUpload({ value, onChange, label }) {
@@ -102,7 +102,7 @@ function EditRoomModal({ room, onSave, onClose }) {
 export default function AdminPanel({ properties, onSave, onBack, tenants, onUpdateTenant, onConfirm }) {
   const [editProp, setEditProp] = useState(null)
   const [editRoom, setEditRoom] = useState(null)
-  const [viewProp, setViewProp] = useState(null)
+  const [expandedProp, setExpandedProp] = useState(null)
   const [tab, setTab] = useState('properties')
   const pendingTenants = tenants.filter(t => t.status === 'pending')
   const confirmedTenants = tenants.filter(t => t.status === 'confirmed')
@@ -115,12 +115,11 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
 
   function saveRoom(updated) {
     const newProps = properties.map(p => {
-      if (p.id !== viewProp.id) return p
+      if (p.id !== expandedProp.id) return p
       return { ...p, rooms: p.rooms.map(r => r.id === updated.id ? updated : r) }
     })
     onSave(newProps)
     setEditRoom(null)
-    setViewProp(newProps.find(p => p.id === viewProp.id))
   }
 
   function deleteProperty(propId) {
@@ -134,59 +133,16 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
         return { ...p, rooms: p.rooms.filter(r => r.id !== roomId) }
       })
       onSave(newProps)
-      setViewProp(newProps.find(p => p.id === propId))
     }
   }
 
-  function addRoom() {
+  function addRoom(prop) {
     const newRoom = { id: Date.now(), name: 'Bilik Baru', price: 0, status: 'kosong', description: '', beds: [{ id: Date.now(), name: 'Katil 1', occupied: false }] }
     const newProps = properties.map(p => {
-      if (p.id !== viewProp.id) return p
+      if (p.id !== prop.id) return p
       return { ...p, rooms: [...p.rooms, newRoom] }
     })
     onSave(newProps)
-    setViewProp(newProps.find(p => p.id === viewProp.id))
-  }
-
-  if (viewProp) {
-    const prop = viewProp
-    return (
-      <div className="min-h-screen bg-accent">
-        <div className="bg-primary px-4 pt-6 pb-8 rounded-b-3xl">
-          <button onClick={() => setViewProp(null)} className="flex items-center gap-2 text-white mb-4">
-            <ArrowLeft size={20} /> Kembali
-          </button>
-          <h1 className="text-white text-lg font-bold">{prop.name}</h1>
-          <p className="text-white/70 text-sm">{prop.rooms.length} bilik</p>
-        </div>
-        <div className="px-4 -mt-4 pb-6">
-          {prop.rooms.map(room => (
-            <div key={room.id} className="bg-white rounded-2xl card-shadow p-4 mt-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h3 className="font-bold text-primary">{room.name}</h3>
-                  <p className="text-green-600 font-bold text-sm">RM{room.price}/bulan</p>
-                  <p className="text-muted text-xs mt-1">{room.beds.length} katil</p>
-                  <div className="flex gap-1 mt-1">
-                    {room.beds.map(b => (
-                      <span key={b.id} className={`text-xs px-1.5 py-0.5 rounded ${b.occupied ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>{b.name}</span>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex gap-1">
-                  <button onClick={() => setEditRoom(room)} className="p-2 text-primary hover:bg-accent rounded-lg"><Edit2 size={16} /></button>
-                  <button onClick={() => deleteRoom(prop.id, room.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
-                </div>
-              </div>
-            </div>
-          ))}
-          <button onClick={addRoom} className="w-full bg-primary hover:bg-dark text-white font-bold py-4 rounded-3xl mt-6 flex items-center justify-center gap-2">
-            <Plus size={20} /> Tambah Bilik
-          </button>
-        </div>
-        {editRoom && <EditRoomModal room={editRoom} onSave={saveRoom} onClose={() => setEditRoom(null)} />}
-      </div>
-    )
   }
 
   return (
@@ -211,21 +167,58 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
               <div className="bg-white rounded-2xl p-3 text-center"><p className="text-muted text-xs">Pendapatan</p><p className="text-green-600 text-2xl font-bold">RM{totalMonthlyRent}</p></div>
             </div>
             {properties.map(prop => (
-              <div key={prop.id} className="bg-white rounded-3xl card-shadow p-4 mt-4">
-                <div className="flex items-start gap-3">
-                  <img src={prop.image} alt={prop.name} className="w-16 h-16 rounded-xl object-cover"
-                    onError={e => e.target.src = 'https://placehold.co/100x100/e8f5f1/4A9B8C?text=Prop'} />
-                  <div className="flex-1">
-                    <h3 className="font-bold text-primary text-sm">{prop.name}</h3>
-                    <p className="text-muted text-xs">📍 {prop.location}</p>
-                    <p className="text-muted text-xs mt-1">{prop.rooms.length} bilik</p>
-                    <button onClick={() => setViewProp(prop)} className="text-primary text-xs mt-2 flex items-center gap-1">Lihat Bilik <ChevronRight size={14} /></button>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => setEditProp(prop)} className="p-2 text-primary hover:bg-accent rounded-lg"><Edit2 size={16} /></button>
-                    <button onClick={() => deleteProperty(prop.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
+              <div key={prop.id} className="bg-white rounded-3xl card-shadow mt-4 overflow-hidden">
+                <div className="p-4">
+                  <div className="flex items-start gap-3">
+                    <img src={prop.image} alt={prop.name} className="w-16 h-16 rounded-xl object-cover"
+                      onError={e => e.target.src = 'https://placehold.co/100x100/e8f5f1/4A9B8C?text=Prop'} />
+                    <div className="flex-1">
+                      <h3 className="font-bold text-primary text-sm">{prop.name}</h3>
+                      <p className="text-muted text-xs">📍 {prop.location}</p>
+                      <p className="text-muted text-xs mt-1">{prop.rooms.length} bilik</p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button onClick={() => setExpandedProp(expandedProp?.id === prop.id ? null : prop)} className="p-2 bg-primary/10 text-primary rounded-lg text-xs">
+                        {expandedProp?.id === prop.id ? 'Tutup' : 'Buka'}
+                      </button>
+                      <button onClick={() => setEditProp(prop)} className="p-2 text-primary hover:bg-accent rounded-lg"><Edit2 size={16} /></button>
+                      <button onClick={() => deleteProperty(prop.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
+                    </div>
                   </div>
                 </div>
+                
+                {expandedProp?.id === prop.id && (
+                  <div className="border-t bg-accent/30 p-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-bold text-primary text-sm">📋 Senarai Bilik</h4>
+                      <button onClick={() => addRoom(prop)} className="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1"><Plus size={12} /> Tambah</button>
+                    </div>
+                    {prop.rooms.length === 0 ? (
+                      <p className="text-muted text-sm text-center py-4">Tiada bilik lagi. Tambah bilik baru!</p>
+                    ) : (
+                      prop.rooms.map(room => (
+                        <div key={room.id} className="bg-white rounded-xl p-3 mb-2">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h5 className="font-bold text-primary text-sm">{room.name}</h5>
+                              <p className="text-green-600 font-bold text-sm">RM{room.price}/bulan</p>
+                              <p className="text-muted text-xs mt-1">{room.beds.length} katil</p>
+                              <div className="flex gap-1 mt-1 flex-wrap">
+                                {room.beds.map(b => (
+                                  <span key={b.id} className={`text-xs px-1.5 py-0.5 rounded ${b.occupied ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>{b.name}</span>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="flex gap-1">
+                              <button onClick={() => setEditRoom(room)} className="p-1.5 text-primary bg-accent rounded-lg"><Edit2 size={14} /></button>
+                              <button onClick={() => deleteRoom(prop.id, room.id)} className="p-1.5 text-red-500 bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             ))}
             <button onClick={() => {
@@ -265,6 +258,7 @@ export default function AdminPanel({ properties, onSave, onBack, tenants, onUpda
         )}
       </div>
       {editProp && <EditPropertyModal prop={editProp} onSave={saveProperty} onClose={() => setEditProp(null)} />}
+      {editRoom && <EditRoomModal room={editRoom} onSave={saveRoom} onClose={() => setEditRoom(null)} />}
     </div>
   )
 }
