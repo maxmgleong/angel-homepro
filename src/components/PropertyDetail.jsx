@@ -1,7 +1,12 @@
 import { ArrowLeft, Wifi, Snowflake, Refrigerator, Car, Bed } from 'lucide-react'
-import { FACILITIES } from '../data/properties'
 
-const ICONS = { Wifi, Snowflake, Refrigerator, Car }
+const ICONS = { wifi: Wifi, ac: Snowflake, peti_sejuk: Refrigerator, car: Car }
+const FAC_LABEL = { wifi: 'WiFi', ac: 'AC', peti_sejuk: 'Peti Sejuk', car: 'Parking' }
+
+function formatFacilityName(f) {
+  if (FAC_LABEL[f]) return FAC_LABEL[f]
+  return f.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+}
 
 export default function PropertyDetail({ property, onBack, onRoomClick }) {
   return (
@@ -39,21 +44,30 @@ export default function PropertyDetail({ property, onBack, onRoomClick }) {
                         <p className="text-muted text-xs">sebulan</p>
                       </div>
                     </div>
+                    
+                    {/* Facilities */}
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {room.facilities.map(f => {
+                        const Icon = ICONS[f]
+                        return (
+                          <span key={f} className="flex items-center gap-1 bg-accent px-2 py-0.5 rounded text-xs text-primary">
+                            {Icon ? <Icon size={10} /> : <span>✨</span>}
+                            {formatFacilityName(f)}
+                          </span>
+                        )
+                      })}
+                    </div>
+
                     <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-1">
-                        {room.facilities.map(f => {
-                          const Icon = ICONS[f]
-                          return Icon ? <Icon key={f} size={12} className="text-primary" /> : null
-                        })}
-                      </div>
+                      <div />
                       <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${kosong > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                         {kosong > 0 ? `🟢 ${kosong} katil kosong` : '🔴 Penuh'}
                       </span>
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1">
                       {room.beds.map(b => (
-                        <span key={b.id} className={`px-2 py-1 rounded-lg text-xs font-medium ${b.occupied ? 'bg-red-100 text-red-600 line-through' : 'bg-green-100 text-green-700'}`}>
-                          🛏️ {b.name}: RM {b.price || room.price}
+                        <span key={b.id} className={`px-2 py-1 rounded-lg text-xs font-medium ${b.occupied ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}>
+                          🛏️ {b.name}: RM {b.price || room.price} {b.occupied ? '(Penuh)' : '(Tersedia)'}
                         </span>
                       ))}
                     </div>
