@@ -23,6 +23,23 @@ export default function App() {
   const [tenants, setTenants] = useState([])
   const [loading, setLoading] = useState(true)
   const [adminLoggedIn, setAdminLoggedIn] = useState(false)
+  const [deferredPrompt, setDeferredPrompt] = useState(null)
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+    })
+  }, [])
+
+  async function handleInstall() {
+    if (!deferredPrompt) return
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null)
+    }
+  }
 
   useEffect(() => {
     async function loadData() {
@@ -192,7 +209,7 @@ export default function App() {
     <div className="min-h-screen bg-accent pb-8">
       {view === 'rooms' && (
         <>
-          <Header onAdmin={() => handleAdminLogin()} kosongBeds={kosongBeds} totalBeds={totalBeds} />
+          <Header onAdmin={() => handleAdminLogin()} kosongBeds={kosongBeds} totalBeds={totalBeds} onInstall={handleInstall} showInstall={!!deferredPrompt} />
           <FilterTabs filter={filter} onFilterChange={setFilter} />
           <div className="px-4 space-y-4">
             {getFilteredProperties().map(prop => (

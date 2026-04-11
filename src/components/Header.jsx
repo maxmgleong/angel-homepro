@@ -1,6 +1,6 @@
-import { User, Users } from 'lucide-react'
+import { User, Users, Download } from 'lucide-react'
 
-export default function Header({ onAdmin, kosongBeds, totalBeds }) {
+export default function Header({ onAdmin, kosongBeds, totalBeds, onInstall, showInstall }) {
   return (
     <div className="bg-primary px-4 pt-6 pb-8 rounded-b-3xl shadow-lg">
       <div className="flex items-center justify-between mb-4">
@@ -31,6 +31,11 @@ export default function Header({ onAdmin, kosongBeds, totalBeds }) {
           <p className="text-white text-2xl font-bold">6</p>
         </div>
       </div>
+      {showInstall && (
+        <button onClick={onInstall} className="w-full mt-4 bg-white text-primary font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+          <Download size={18} /> Install App ni di Phone
+        </button>
+      )}
     </div>
   )
 }
