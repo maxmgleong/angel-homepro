@@ -8,7 +8,7 @@ import RoomDetail from './components/RoomDetail'
 import BookingForm from './components/BookingForm'
 import SuccessPage from './components/SuccessPage'
 import AdminPanel from './components/AdminPanel'
-import { savePropertiesToCloud, getPropertiesFromCloud, saveTenantsToCloud, getTenantsFromCloud } from './firebase'
+import { savePropertiesToCloud, getPropertiesFromCloud, saveTenantsToCloud, getTenantsFromCloud } from './cloudflare'
 
 const STORAGE_KEY = 'rental_properties_v2'
 const TENANTS_KEY = 'rental_tenants_v2'
@@ -106,13 +106,34 @@ export default function App() {
   }
 
   function handleSubmit(tenantData) {
+    // Mark bed as occupied immediately on booking
+    const updatedProps = properties.map(p => {
+      if (p.id !== selectedProp.id) return p
+      return {
+        ...p,
+        rooms: p.rooms.map(r => {
+          if (r.id !== selectedRoom.id) return r
+          return {
+            ...r,
+            beds: r.beds.map(b => {
+              if (b.id === tenantData.selectedBedId) {
+                return { ...b, occupied: true }
+              }
+              return b
+            })
+          }
+        })
+      }
+    })
+    saveProperties(updatedProps)
+
     const newTenant = {
       ...tenantData,
       roomId: selectedRoom.id,
       propId: selectedProp.id,
       appliedAt: new Date().toISOString(),
       status: 'pending',
-      rentAmount: selectedRoom.price,
+      rentAmount: tenantData.bedPrice || selectedRoom.price,
       confirmedAt: null,
       nextPaymentDate: null
     }

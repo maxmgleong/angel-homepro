@@ -52,7 +52,9 @@ export default function PropertyDetail({ property, onBack, onRoomClick }) {
                     </div>
                     <div className="mt-1 text-xs text-muted">
                       {room.beds.map(b => (
-                        <span key={b.id} className={`mr-1 ${b.occupied ? 'line-through opacity-50' : ''}`}>• {b.name}</span>
+                        <span key={b.id} className={`mr-2 ${b.occupied ? 'line-through opacity-50' : 'text-green-600 font-medium'}`}>
+                          • {b.name} - RM {b.price || room.price} {b.occupied ? '(Penuh)' : '(Tersedia)'}
+                        </span>
                       ))}
                     </div>
                   </div>

@@ -15,47 +15,53 @@ export default {
     }
 
     try {
-      // Properties API
+      // Properties API - GET
       if (path === '/api/properties' && request.method === 'GET') {
-        const result = await env.DB.prepare('SELECT * FROM properties').first()
+        const result = await env.DB.prepare('SELECT * FROM properties LIMIT 1').first()
         const data = result ? JSON.parse(result.data) : null
         return new Response(JSON.stringify(data), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }
 
+      // Properties API - POST
       if (path === '/api/properties' && request.method === 'POST') {
         const body = await request.json()
         const data = JSON.stringify(body.properties)
+        const now = new Date().toISOString()
+        
         // Check if exists
-        const existing = await env.DB.prepare('SELECT * FROM properties').first()
+        const existing = await env.DB.prepare('SELECT * FROM properties LIMIT 1').first()
         if (existing) {
-          await env.DB.prepare('UPDATE properties SET data = ?, updated_at = ?').bind(data, new Date().toISOString()).run()
+          await env.DB.prepare('UPDATE properties SET data = ?, updated_at = ?').bind(data, now).run()
         } else {
-          await env.DB.prepare('INSERT INTO properties (data, updated_at) VALUES (?, ?)').bind(data, new Date().toISOString()).run()
+          await env.DB.prepare('INSERT INTO properties (id, data, updated_at) VALUES (?, ?, ?)').bind('main', data, now).run()
         }
         return new Response(JSON.stringify({ success: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }
 
-      // Tenants API
+      // Tenants API - GET
       if (path === '/api/tenants' && request.method === 'GET') {
-        const result = await env.DB.prepare('SELECT * FROM tenants').first()
+        const result = await env.DB.prepare('SELECT * FROM tenants LIMIT 1').first()
         const data = result ? JSON.parse(result.data) : []
         return new Response(JSON.stringify(data), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }
 
+      // Tenants API - POST
       if (path === '/api/tenants' && request.method === 'POST') {
         const body = await request.json()
         const data = JSON.stringify(body.tenants)
-        const existing = await env.DB.prepare('SELECT * FROM tenants').first()
+        const now = new Date().toISOString()
+        
+        const existing = await env.DB.prepare('SELECT * FROM tenants LIMIT 1').first()
         if (existing) {
-          await env.DB.prepare('UPDATE tenants SET data = ?, updated_at = ?').bind(data, new Date().toISOString()).run()
+          await env.DB.prepare('UPDATE tenants SET data = ?, updated_at = ?').bind(data, now).run()
         } else {
-          await env.DB.prepare('INSERT INTO tenants (data, updated_at) VALUES (?, ?)').bind(data, new Date().toISOString()).run()
+          await env.DB.prepare('INSERT INTO tenants (id, data, updated_at) VALUES (?, ?, ?)').bind('main', data, now).run()
         }
         return new Response(JSON.stringify({ success: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -75,33 +81,20 @@ export default {
           })
         }
 
-        const filename = `${folder}/${Date.now()}_${file.name}`
+        const ext = file.name.split('.').pop() || 'jpg'
+        const filename = `${folder}/${Date.now()}.${ext}`
         await env.IMAGES.put(filename, file.stream(), {
           httpMetadata: { contentType: file.type }
         })
 
-        const imageUrl = `${url.origin}/images/${filename}`
+        // Construct the R2 public URL
+        const imageUrl = `https://pub-c56079a1c4064f1ca0e1c19a2c36d82.r2.dev/${filename}`
         return new Response(JSON.stringify({ url: imageUrl }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }
 
-      // Serve uploaded images from R2
-      if (path.startsWith('/images/')) {
-        const filename = path.substring('/images/'.length)
-        const object = await env.IMAGES.get(filename)
-        if (!object) {
-          return new Response('Not found', { status: 404 })
-        }
-        return new Response(object.body, {
-          headers: {
-            'Content-Type': object.httpMetadata.contentType || 'application/octet-stream',
-            'Cache-Control': 'public, max-age=31536000',
-          }
-        })
-      }
-
-      return new Response(JSON.stringify({ error: 'Not found' }), {
+      return new Response(JSON.stringify({ error: 'Not found', path }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { ArrowLeft, Edit2, Trash2, Plus, Save, X, Upload, Calendar, DollarSign, Users, CheckCircle, Phone, Image } from 'lucide-react'
 import { FACILITIES_LIST } from '../data/properties'
-import { uploadImage } from '../firebase'
+import { uploadImage } from '../cloudflare'
 
 function ImageUpload({ value, onChange, label, folder }) {
   const [preview, setPreview] = useState(value || null)
@@ -12,29 +12,29 @@ function ImageUpload({ value, onChange, label, folder }) {
     const file = e.target.files[0]
     if (file) {
       setUploading(true)
+      // Show preview immediately
       const reader = new FileReader()
-      reader.onloadend = async () => {
-        const base64 = reader.result
-        setPreview(base64)
-        // Upload to Firebase Storage with timeout
-        const path = `${folder}/${Date.now()}_${file.name}`
-        try {
-          const url = await Promise.race([
-            uploadImage(base64, path),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
-          ])
-          if (url) {
-            onChange(url)
-          } else {
-            onChange(base64)
-          }
-        } catch (error) {
-          console.log('Upload failed, using base64')
-          onChange(base64)
-        }
-        setUploading(false)
-      }
+      reader.onloadend = () => setPreview(reader.result)
       reader.readAsDataURL(file)
+      
+      // Upload to Cloudflare R2
+      try {
+        const url = await uploadImage(file, folder)
+        if (url) {
+          onChange(url)
+        } else {
+          // Fallback to base64
+          const reader2 = new FileReader()
+          reader2.onloadend = () => onChange(reader2.result)
+          reader2.readAsDataURL(file)
+        }
+      } catch (error) {
+        console.log('Upload failed, using base64')
+        const reader2 = new FileReader()
+        reader2.onloadend = () => onChange(reader2.result)
+        reader2.readAsDataURL(file)
+      }
+      setUploading(false)
     }
   }
 
@@ -112,11 +112,11 @@ function EditRoomModal({ room, onSave, onClose }) {
   }
 
   function addBed() {
-    setForm(p => ({ ...p, beds: [...p.beds, { id: Date.now(), name: `Katil ${p.beds.length + 1}`, occupied: false }] }))
+    setForm(p => ({ ...p, beds: [...p.beds, { id: Date.now(), name: `Katil ${p.beds.length + 1}`, price: p.price || 0, occupied: false }] }))
   }
 
-  function updateBed(id, name) {
-    setForm(p => ({ ...p, beds: p.beds.map(b => b.id === id ? { ...b, name } : b) }))
+  function updateBed(id, field, value) {
+    setForm(p => ({ ...p, beds: p.beds.map(b => b.id === id ? { ...b, [field]: value } : b) }))
   }
 
   function removeBed(id) {
@@ -171,12 +171,16 @@ function EditRoomModal({ room, onSave, onClose }) {
               <button onClick={addCustomFacility} className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-xl text-xs font-bold">+</button>
             </div>
           </div>
-          <div><label className="block text-xs font-semibold text-primary mb-2">Katil dalam Bilik</label>
+          <div><label className="block text-xs font-semibold text-primary mb-2">Katil dalam Bilik (Harga Sebulan)</label>
             <div className="space-y-2">
               {form.beds.map((bed, i) => (
                 <div key={bed.id} className="flex items-center gap-2">
-                  <input value={bed.name} onChange={e => updateBed(bed.id, e.target.value)}
+                  <input value={bed.name} onChange={e => updateBed(bed.id, 'name', e.target.value)}
+                    placeholder="Nama katil"
                     className="flex-1 border-2 border-accent rounded-xl px-3 py-2 text-sm focus:border-primary focus:outline-none" />
+                  <input type="number" value={bed.price || 0} onChange={e => updateBed(bed.id, 'price', +e.target.value)}
+                    placeholder="RM"
+                    className="w-24 border-2 border-accent rounded-xl px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                   <button onClick={() => removeBed(bed.id)} className="text-red-500 p-2"><Trash2 size={16} /></button>
                 </div>
               ))}
