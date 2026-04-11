@@ -58,7 +58,7 @@ export default function PropertyDetail({ property, onBack, onRoomClick }) {
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-bold text-primary text-base">{room.name}</h4>
-                    <p className="text-primary font-bold">RM {room.price}/bulan</p>
+                    <p className="text-primary font-bold">RM {room.price || 0}/bulan</p>
                   </div>
                   
                   {/* Room Description */}
@@ -72,7 +72,7 @@ export default function PropertyDetail({ property, onBack, onRoomClick }) {
                     <div className="flex flex-wrap gap-1">
                       {room.beds.map(b => (
                         <span key={b.id} className={`px-2 py-1 rounded-lg text-xs font-medium ${b.occupied ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}>
-                          {b.name}: RM {b.price || room.price}
+                          {b.name}: RM {b.price || room.price || 0}
                         </span>
                       ))}
                     </div>
