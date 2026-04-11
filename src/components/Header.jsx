@@ -6,7 +6,7 @@ export default function Header({ onAdmin, kosongBeds, totalBeds }) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-secondary text-sm">Selamat Datang!</p>
-          <h1 className="text-white text-xl font-bold">Rumah Sewa Malaysia</h1>
+          <h1 className="text-white text-xl font-bold">Bilik Sewa N9</h1>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={onAdmin} className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-sm font-medium flex items-center gap-1">
