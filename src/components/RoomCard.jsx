@@ -19,8 +19,9 @@ export default function RoomCard({ room, onBook }) {
 
   return (
     <div className="bg-white rounded-3xl overflow-hidden card-shadow">
+      {/* Full width image */}
       <div className="relative">
-        <img src={room.image} alt={room.name} className="w-full h-44 object-cover"
+        <img src={room.image} alt={room.name} className="w-full h-48 object-cover"
           onError={e => e.target.src = 'https://placehold.co/600x300/e8f5f1/4A9B8C?text=Bilik'} />
         <div className="absolute top-3 left-3">
           <span className={`px-3 py-1 rounded-full text-xs font-bold ${allOccupied ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
@@ -28,29 +29,33 @@ export default function RoomCard({ room, onBook }) {
           </span>
         </div>
         <div className="absolute bottom-3 right-3 bg-dark/80 text-white px-3 py-1 rounded-xl text-sm font-bold">
-          RM {room.price}/<span className="text-xs font-normal">bulan</span>
+          RM {room.price}/bulan
         </div>
       </div>
+      
+      {/* Room Name */}
       <div className="p-4">
-        <h3 className="font-bold text-primary text-base mb-2">{room.name}</h3>
+        <h3 className="font-bold text-primary text-lg mb-3">{room.name}</h3>
         
-        {/* Description with proper formatting */}
+        {/* Description - Clear and readable */}
         {room.description && (
-          <div className="bg-accent rounded-xl p-3 mb-3">
-            <p className="text-xs text-gray-700 leading-relaxed" style={{ whiteSpace: 'pre-wrap' }}>{room.description}</p>
+          <div className="bg-accent rounded-xl p-4 mb-4">
+            <p className="text-sm font-semibold text-primary mb-2">📝 Deskripsi:</p>
+            <p className="text-sm text-gray-700 leading-relaxed" style={{ whiteSpace: 'pre-wrap' }}>{room.description}</p>
           </div>
         )}
         
-        {/* Individual beds status */}
-        <div className="mb-3">
-          <p className="text-xs font-semibold text-primary mb-2">🛏️ Katil:</p>
-          <div className="flex flex-col gap-1">
+        {/* Beds - Clear pricing */}
+        <div className="mb-4">
+          <p className="text-sm font-semibold text-primary mb-2">🛏️ Pilihan Katil:</p>
+          <div className="space-y-2">
             {room.beds.map((bed) => (
-              <div key={bed.id} className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium ${bed.occupied ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'}`}>
-                <span className="flex items-center gap-1">
-                  <Bed size={12} />
-                  {bed.name}
-                </span>
+              <div key={bed.id} className={`flex items-center justify-between p-3 rounded-xl ${bed.occupied ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'}`}>
+                <div className="flex items-center gap-2">
+                  <Bed size={16} />
+                  <span className="font-medium">{bed.name}</span>
+                  {bed.occupied && <span className="text-xs">(Penuh)</span>}
+                </div>
                 <span className="font-bold">RM {bed.price || room.price}/bulan</span>
               </div>
             ))}
@@ -58,21 +63,24 @@ export default function RoomCard({ room, onBook }) {
         </div>
 
         {/* Facilities */}
-        <div className="flex flex-wrap gap-2 mb-3">
-          {room.facilities.map(f => (
-            <div key={f} className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg">
-              {getFacilityIcon(f)}
-              <span className="text-xs text-blue-700 font-medium">{formatFacilityName(f)}</span>
-            </div>
-          ))}
+        <div className="mb-4">
+          <p className="text-sm font-semibold text-primary mb-2">✨ Fasiliti:</p>
+          <div className="flex flex-wrap gap-2">
+            {room.facilities.map(f => (
+              <div key={f} className="flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-lg">
+                {getFacilityIcon(f)}
+                <span className="text-xs text-blue-700 font-medium">{formatFacilityName(f)}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {allOccupied ? (
-          <button disabled className="btn-secondary w-full text-center text-sm opacity-50">
+          <button disabled className="btn-secondary w-full text-center py-3 opacity-50">
             🔴 Tiada Katil Tersedia
           </button>
         ) : (
-          <button onClick={onBook} className="btn-primary w-full text-center text-sm">
+          <button onClick={onBook} className="btn-primary w-full text-center py-3 text-base">
             📋 Tempah Sekarang
           </button>
         )}
