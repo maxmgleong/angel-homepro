@@ -167,8 +167,11 @@ export default function App() {
   }
 
   function handleAdminLogin() {
-    setAdminLoggedIn(true)
     setView('admin')
+  }
+
+  function handleLoginSuccess() {
+    setAdminLoggedIn(true)
   }
 
   if (loading) {
@@ -211,7 +214,7 @@ export default function App() {
         <SuccessPage room={selectedRoom} property={selectedProp} onHome={() => { setView('rooms'); setSelectedRoom(null); setSelectedProp(null) }} />
       )}
       {view === 'admin' && !adminLoggedIn && (
-        <AdminLogin onLogin={handleAdminLogin} />
+        <AdminLogin onLogin={handleLoginSuccess} />
       )}
       {view === 'admin' && adminLoggedIn && (
         <AdminPanel
