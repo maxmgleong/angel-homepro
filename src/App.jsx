@@ -22,11 +22,9 @@ export default function App() {
   const [tenants, setTenants] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // Load data on mount
   useEffect(() => {
     async function loadData() {
       try {
-        // Try to get from cloud first
         const cloudProperties = await getPropertiesFromCloud()
         const cloudTenants = await getTenantsFromCloud()
         
@@ -34,26 +32,17 @@ export default function App() {
           setProperties(cloudProperties)
           localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudProperties))
         } else {
-          // Use local data if cloud is empty
-          const saved = localStorage.getItem(STORAGE_KEY)
-          if (saved) {
-            setProperties(JSON.parse(saved))
-          } else {
-            setProperties(INITIAL_PROPERTIES)
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PROPERTIES))
-          }
+          setProperties(INITIAL_PROPERTIES)
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PROPERTIES))
+          await savePropertiesToCloud(INITIAL_PROPERTIES)
         }
         
         if (cloudTenants && cloudTenants.length > 0) {
           setTenants(cloudTenants)
           localStorage.setItem(TENANTS_KEY, JSON.stringify(cloudTenants))
-        } else {
-          const savedTenants = localStorage.getItem(TENANTS_KEY)
-          if (savedTenants) setTenants(JSON.parse(savedTenants))
         }
       } catch (error) {
         console.error("Error loading data:", error)
-        // Fallback to localStorage
         const saved = localStorage.getItem(STORAGE_KEY)
         if (saved) {
           setProperties(JSON.parse(saved))
@@ -71,14 +60,12 @@ export default function App() {
   function saveProperties(props) {
     setProperties(props)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(props))
-    // Save to cloud
     savePropertiesToCloud(props)
   }
 
   function saveTenants(newTenants) {
     setTenants(newTenants)
     localStorage.setItem(TENANTS_KEY, JSON.stringify(newTenants))
-    // Save to cloud
     saveTenantsToCloud(newTenants)
   }
 
@@ -106,7 +93,6 @@ export default function App() {
   }
 
   function handleSubmit(tenantData) {
-    // Mark bed as occupied immediately on booking
     const updatedProps = properties.map(p => {
       if (p.id !== selectedProp.id) return p
       return {
