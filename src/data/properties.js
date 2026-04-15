@@ -1,88 +1,87 @@
+// Initial properties data for Rumah Sewa Malaysia
 export const INITIAL_PROPERTIES = [
   {
     id: 1,
     name: 'Rumah Sewa Melati',
-    location: 'Bangsar, Kuala Lumpur',
-    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80',
-    description: 'Rumah kelas menengah dengan suasana aman dan selesa. Dekat dengan amenities dan pengangkutan awam.',
+    location: 'Kuala Lumpur',
+    image: 'https://placehold.co/800x500/4A9B8C/ffffff?text=Kamar+1+Melati',
+    description: ' Bilik lengkap dengan katil, almari, meja. Shared bathroom dengan bilik sebelah. WiFi percuma.',
     rooms: [
-      { id: 1, name: 'Bilik Master Katil Queen', price: 750, status: 'kosong', description: 'Bilik master luas dengan katil queen size, almari besar, dan meja study.', facilities: ['wifi', 'ac', 'peti_sejuk'], beds: [{ id: 1, name: 'Katil Queen - Penyewa 1', occupied: false }, { id: 2, name: 'Katil Queen - Penyewa 2', occupied: false }] },
-      { id: 2, name: 'Bilik Single AC', price: 450, status: 'kosong', description: 'Bilik single dengan AC dan katil single. Sesuai untuk pelajar atau pekerja.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Single - Penyewa 1', occupied: false }] },
-      { id: 3, name: 'Bilik Double Kongsi', price: 380, status: 'ditempah', description: 'Bilik double untuk 2 orang. Shared bilik mandi dengan bilik lain.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil 1', occupied: true }, { id: 2, name: 'Katil 2', occupied: true }] },
-      { id: 4, name: 'Bilik AC Budget', price: 350, status: 'kosong', description: 'Bilik AC budget dengan katil single. Shared bathroom. Lokasi strategik near LRT.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] }
+      { id: 101, name: 'Kamar 1A', price: 350, status: 'kosong', beds: [{ id: 1, name: 'Katil 1', occupied: false }], description: 'Kamar luas dengan window' },
+      { id: 102, name: 'Kamar 1B', price: 380, status: 'kosong', beds: [{ id: 2, name: 'Katil 2', occupied: true }], description: 'Kamar dengan AC' },
+      { id: 103, name: 'Kamar 1C', price: 350, status: 'ditempah', beds: [{ id: 3, name: 'Katil 3', occupied: false }], description: 'Kamar standard' }
     ]
   },
   {
     id: 2,
-    name: 'Apartment Seri Intan',
-    location: 'TTDI, Kuala Lumpur',
-    image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80',
-    description: 'Apartment modern dengan security 24 jam. Facilities lengkap termasuk swimming pool dan gym.',
+    name: 'Apartmen Seri',
+    location: 'Petaling Jaya',
+    image: 'https://placehold.co/800x500/2ECC71/ffffff?text=Kamar+2+Seri',
+    description: 'Shared house dengan bilik tidur dan bilik air. Lokasi strategik near LRT.',
     rooms: [
-      { id: 5, name: 'Master Room + Private Bath', price: 950, status: 'kosong', description: 'Bilik master dengan bilik air sendiri. View cantik dan ventilation baik.', facilities: ['wifi', 'ac', 'peti_sejuk', 'parking'], beds: [{ id: 1, name: 'Katil King - Penyewa 1', occupied: false }, { id: 2, name: 'Katil King - Penyewa 2', occupied: false }] },
-      { id: 6, name: 'Medium Room Near LRT', price: 600, status: 'kosong', description: 'Bilik sederhana dengan katil queen dan kabinet lengkap. 5 minit ke LRT TTDI.', facilities: ['wifi', 'ac', 'peti_sejuk'], beds: [{ id: 1, name: 'Katil Queen', occupied: false }] },
-      { id: 7, name: 'Small Room Student', price: 400, status: 'kosong', description: 'Bilik kecil sesuai untuk pelajar. Shared bilik mandi. WiFi laju.', facilities: ['wifi'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] },
-      { id: 8, name: 'Budget Room No AC', price: 280, status: 'ditempah', description: 'Bilik tanpa AC, kipas sahaja. Sesuai untuk yang tak sensitif kepada haba.', facilities: ['wifi'], beds: [{ id: 1, name: 'Katil Single', occupied: true }] },
-      { id: 9, name: 'Family Room', price: 1100, status: 'kosong', description: 'Bilik besar untuk keluarga. Boleh memuatkan 3-4 orang dengan katil tambahan.', facilities: ['wifi', 'ac', 'peti_sejuk'], beds: [{ id: 1, name: 'Katil Queen', occupied: false }, { id: 2, name: 'Katil Single 1', occupied: false }, { id: 3, name: 'Katil Single 2', occupied: false }] }
+      { id: 201, name: 'Kamar 2A', price: 420, status: 'kosong', beds: [{ id: 4, name: 'Katil 4', occupied: false }], description: 'Kamar dengan balcony' },
+      { id: 202, name: 'Kamar 2B', price: 450, status: 'kosong', beds: [{ id: 5, name: 'Katil 5', occupied: false }], description: 'Kamar besar dengan wardrobe' }
     ]
   },
   {
     id: 3,
-    name: 'Kondominium Damai',
-    location: 'Mont Kiara, Kuala Lumpur',
-    image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80',
-    description: 'Kondominium eksklusif dengan suasana mewah. Guarded community dengan akses kad.',
+    name: 'Kondominium Emas',
+    location: 'Shah Alam',
+    image: 'https://placehold.co/800x500/9B59B6/ffffff?text=Kamar+3+Emas',
+    description: 'Condo dengan security 24 jam. Shared pool dan gym. Bilik fully furnished.',
     rooms: [
-      { id: 10, name: 'Studio Apartment', price: 1200, status: 'kosong', description: 'Studio lengkap dengan dapur kecil dan bilik air sendiri. Sesuai untuk profesional tunggal.', facilities: ['wifi', 'ac', 'peti_sejuk'], beds: [{ id: 1, name: 'Katil Queen', occupied: false }] },
-      { id: 11, name: 'Deluxe Room', price: 800, status: 'kosong', description: 'Bilik deluxe dengan ruang yang luas dan cupboard besar.', facilities: ['wifi', 'ac', 'peti_sejuk'], beds: [{ id: 1, name: 'Katil Queen', occupied: false }] },
-      { id: 12, name: 'Standard Room AC', price: 550, status: 'kosong', description: 'Bilik standard dengan AC. Sesuai untuk pekerja atau pelajar.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] }
+      { id: 301, name: 'Kamar 3A', price: 550, status: 'kosong', beds: [{ id: 6, name: 'Katil 6', occupied: false }], description: 'Master room dengan attached bath' },
+      { id: 302, name: 'Kamar 3B', price: 480, status: 'ditempah', beds: [{ id: 7, name: 'Katil 7', occupied: false }], description: 'Medium room' },
+      { id: 303, name: 'Kamar 3C', price: 420, status: 'kosong', beds: [{ id: 8, name: 'Katil 8', occupied: true }], description: 'Standard room' }
     ]
   },
   {
     id: 4,
-    name: 'Rumah Teres Seri Mutiara',
-    location: 'Wangsa Maju, Kuala Lumpur',
-    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80',
-    description: 'Rumah teres 3 tingkat dengan bilik kosong di tingkat 2. Dekat LRT dan supermarket.',
+    name: 'Villa Heights',
+    location: 'Cyberjaya',
+    image: 'https://placehold.co/800x500/E74C3C/ffffff?text=Kamar+4+Villa',
+    description: 'Near university. Bilik bersih dan宽敞. Included utility bills.',
     rooms: [
-      { id: 13, name: 'Room 1 - Master Bedroom', price: 650, status: 'kosong', description: 'Bilik master di lantai 2 dengan katil queen dan almari besar.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Queen', occupied: false }] },
-      { id: 14, name: 'Room 2 - Medium Room', price: 480, status: 'kosong', description: 'Bilik sederhana dengan katil single dan meja study.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] },
-      { id: 15, name: 'Room 3 - Small Room', price: 380, status: 'ditempah', description: 'Bilik kecil dengan katil single. Share bilik mandi dengan Room 2.', facilities: ['wifi'], beds: [{ id: 1, name: 'Katil Single', occupied: true }] },
-      { id: 16, name: 'Room 4 - AC Room', price: 450, status: 'kosong', description: 'Bilik dengan AC dan katil single. Bilik mandi luar.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] }
+      { id: 401, name: 'Kamar 4A', price: 380, status: 'kosong', beds: [{ id: 9, name: 'Katil 9', occupied: false }], description: 'Single bed room' },
+      { id: 402, name: 'Kamar 4B', price: 400, status: 'kosong', beds: [{ id: 10, name: 'Katil 10', occupied: false }], description: 'Queen bed room' }
     ]
   },
   {
     id: 5,
-    name: 'Flat Sri Perak',
-    location: 'Setapak, Kuala Lumpur',
-    image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800&q=80',
-    description: 'Flat kos rendah dengan komuniti mesra. Dekat dengan university dan hospital.',
+    name: 'Rumah Sewa Zahra',
+    location: 'Nilai',
+    image: 'https://placehold.co/800x500/F39C12/ffffff?text=Kamar+5+Zahra',
+    description: 'Near KTM station. Rumah bersih dan safe. Parking available.',
     rooms: [
-      { id: 17, name: 'Bilik AC Rumah Owner', price: 420, status: 'kosong', description: 'Bilik AC di rumah owner. Shared semua facilities.', facilities: ['wifi', 'ac', 'peti_sejuk'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] },
-      { id: 18, name: 'Bilik Kipas', price: 320, status: 'kosong', description: 'Bilik kipas sahaja. Shared bilik mandi. Sesuai untuk yang tahan panas.', facilities: ['wifi'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] },
-      { id: 19, name: 'Bilik Queen + AC', price: 500, status: 'kosong', description: 'Bilik dengan katil queen dan AC. Shared bilik mandi.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Queen', occupied: false }] }
+      { id: 501, name: 'Kamar 5A', price: 320, status: 'kosong', beds: [{ id: 11, name: 'Katil 11', occupied: false }], description: 'Budget room' },
+      { id: 502, name: 'Kamar 5B', price: 350, status: 'ditempah', beds: [{ id: 12, name: 'Katil 12', occupied: false }], description: 'Standard room' }
     ]
   },
   {
     id: 6,
-    name: 'Residensi Srikl',
-    location: 'Bangsar South, Kuala Lumpur',
-    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80',
-    description: 'Residensi baru dengan design moden. Dekat dengan LRT Abdullah Hukum dan Mid Valley.',
+    name: 'Seri Ivy Apartment',
+    location: 'Serdang',
+    image: 'https://placehold.co/800x500/1ABC9C/ffffff?text=Kamar+6+Seri',
+    description: 'Near hospital and university. Fully furnished. WiFi and water included.',
     rooms: [
-      { id: 20, name: 'Master Suite', price: 1400, status: 'kosong', description: 'Master suite dengan bilik air sendiri, bathtub, dan workspace.', facilities: ['wifi', 'ac', 'peti_sejuk', 'parking'], beds: [{ id: 1, name: 'Katil King', occupied: false }] },
-      { id: 21, name: 'Premium Room', price: 900, status: 'kosong', description: 'Bilik premium dengan katil queen, AC, dan private bathroom.', facilities: ['wifi', 'ac', 'peti_sejuk'], beds: [{ id: 1, name: 'Katil Queen', occupied: false }] },
-      { id: 22, name: 'Standard Room A', price: 650, status: 'ditempah', description: 'Bilik standard dengan katil queen. Shared bilik mandi di luar.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Queen', occupied: true }] },
-      { id: 23, name: 'Standard Room B', price: 600, status: 'kosong', description: 'Bilik standard dengan katil single. Sesuai untuk pelajar.', facilities: ['wifi', 'ac'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] },
-      { id: 24, name: 'Economy Room', price: 480, status: 'kosong', description: 'Bilik ekonomi dengan kipas. Shared bilik mandi. Harga paling rendah.', facilities: ['wifi'], beds: [{ id: 1, name: 'Katil Single', occupied: false }] }
+      { id: 601, name: 'Kamar 6A', price: 480, status: 'kosong', beds: [{ id: 13, name: 'Katil 13', occupied: false }], description: 'Premium room' },
+      { id: 602, name: 'Kamar 6B', price: 450, status: 'kosong', beds: [{ id: 14, name: 'Katil 14', occupied: true }], description: 'AC room' },
+      { id: 603, name: 'Kamar 6C', price: 400, status: 'kosong', beds: [{ id: 15, name: 'Katil 15', occupied: false }], description: 'Fan room' }
     ]
   }
 ]
 
-export const FACILITIES_LIST = ['wifi', 'ac', 'peti_sejuk', 'parking']
-export const FACILITIES = {
-  wifi: { label: 'WiFi', icon: 'Wifi' },
-  ac: { label: 'AC', icon: 'Snowflake' },
-  peti_sejuk: { label: 'Peti Sejuk', icon: 'Refrigerator' },
-  parking: { label: 'Parking', icon: 'Car' }
-}
+export const FACILITIES_LIST = [
+  'WiFi',
+  'Air-Cond',
+  'Katil',
+  'Almari',
+  'Meja',
+  'Kerusi',
+  'Peti Sejuk',
+  'Dapur',
+  'Bilik Air Berkongsi',
+  'Parking',
+  '24/7 Security',
+  'CCTV'
+]
